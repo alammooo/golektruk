@@ -7,7 +7,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { RegisterInput } from "."
 import { Dispatch, SetStateAction, useState } from "react"
 import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
@@ -16,6 +15,8 @@ import { apiUrl } from "@/utils/apiUrl"
 import { useToast } from "@/components/ui/use-toast"
 import { useMutation } from "@tanstack/react-query"
 import { UploadFn } from "@/query/UploadFn"
+import { AuthFn } from "@/query/RegisterFn"
+import { RegisterInput } from "@/types/auth.types"
 
 type Props = {
   data: RegisterInput | undefined
@@ -29,20 +30,18 @@ export default function UploadDialog({
   setShowDialog,
 }: Props) {
   const { toast } = useToast()
-  const { register, handleSubmit } = useForm<RegisterInput>()
   const [filePreview, setFilePreview] = useState<string | ArrayBuffer | null>(
     null
   )
   const [photoCode, setPhotoCode] = useState("")
 
   const { mutate: uploadPhoto, status: uploadStatus } = useMutation({
-    mutationFn: UploadFn.upload,
+    mutationFn: UploadFn.post,
     onMutate: () => {},
     onSuccess: (data) => {
       toast({
         description: "Success upload photo",
       })
-      console.log(data, "HALLO RESPONSE✅✅✅")
       setPhotoCode(data)
     },
     onError: (error: any) => {
@@ -50,16 +49,22 @@ export default function UploadDialog({
     },
   })
 
-  function onSubmit(input: any) {
-    const formData = new FormData()
-    formData.append("file", input.photo[0])
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      setFilePreview(reader.result)
-    }
-    reader.readAsDataURL(input?.photo[0])
+  const { mutate: registerUser, status: registerStatus } = useMutation({
+    mutationFn: AuthFn.register,
+    onMutate: () => {},
+    onSuccess: (data) => {
+      toast({
+        description: "Success upload photo",
+      })
+      setPhotoCode(data)
+    },
+    onError: (error: any) => {
+      toast({ description: "Error upload photo" })
+    },
+  })
 
-    uploadPhoto(formData)
+  function handleClick() {
+    registerUser({ ...data, photos: [photoCode] })
   }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -83,9 +88,7 @@ export default function UploadDialog({
       open={showDialog}
       onOpenChange={() => setShowDialog(false)}>
       <DialogContent>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          className='space-y-3'>
+        <form className='space-y-3'>
           <div>
             <h5 className='font-semibold text-lg mb-2'>Please upload photo</h5>
             <div className='flex items-center justify-center w-full'>
@@ -128,14 +131,17 @@ export default function UploadDialog({
                   id='dropzone-file'
                   type='file'
                   className='hidden'
-                  {...register("photo")}
                   onChange={handleFileChange}
                 />
               </label>
             </div>
           </div>
-          <Button type='submit' className="w-full">Create an account</Button>
         </form>
+        <Button
+          onClick={handleClick}
+          className='w-full'>
+          Create an account
+        </Button>
       </DialogContent>
     </Dialog>
   )

@@ -4,15 +4,7 @@ import { useForm } from "react-hook-form"
 import { useState } from "react"
 import { checkObjectKeys } from "@/utils/checkObject"
 import UploadDialog from "./Dialog"
-
-export type RegisterInput = {
-  email: string
-  name: string
-  password: string
-  phone: string
-  age: number
-  photo: string
-}
+import { RegisterInput } from "@/types/auth.types"
 
 type dataForm = Omit<RegisterInput, "photo">
 
@@ -113,11 +105,19 @@ export default function RegisterPage() {
                   Phone Number
                 </label>
                 <input
-                  type='number'
+                  type='text'
                   id='phone'
                   className='bg-zinc-50 border border-zinc-300 text-zinc-900 sm:text-sm rounded-lg focus:ring-zinc-600 focus:border-zinc-600 block w-full p-2.5'
                   {...register("phone", {
                     required: "please enter phone number",
+                    minLength: {
+                      value: 10,
+                      message: "Must higher than 10 number",
+                    },
+                    maxLength: {
+                      value: 12,
+                      message: "Must lower than 12 number",
+                    },
                   })}
                 />
                 <h5 className='text-xs text-red-500 mt-1 capitalize'>

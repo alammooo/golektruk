@@ -2,7 +2,7 @@ import { apiUrl } from "@/utils/apiUrl"
 import axios from "axios"
 
 export class UploadFn {
-  static async upload(formData: FormData) {
+  static async post(formData: FormData) {
     try {
       const response = await axios.post(
         `${apiUrl}/user/photo/upload`,

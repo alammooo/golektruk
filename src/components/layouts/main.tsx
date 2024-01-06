@@ -61,9 +61,9 @@ export default function MainLayout({ children }: LayoutProps) {
         </div>
       </nav>
 
-      <main className='p-4 h-auto pt-20'>
+      <main className='p-4 h-auto pt-20 min-h-screen'>
         {children}
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4'>
+        {/* <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4'>
           <div className='border-2 border-dashed border-zinc-300 rounded-lg dark:border-zinc-600 h-32 md:h-64'></div>
           <div className='border-2 border-dashed rounded-lg border-zinc-300 dark:border-zinc-600 h-32 md:h-64'></div>
           <div className='border-2 border-dashed rounded-lg border-zinc-300 dark:border-zinc-600 h-32 md:h-64'></div>
@@ -82,7 +82,7 @@ export default function MainLayout({ children }: LayoutProps) {
           <div className='border-2 border-dashed rounded-lg border-zinc-300 dark:border-zinc-600 h-48 md:h-72'></div>
           <div className='border-2 border-dashed rounded-lg border-zinc-300 dark:border-zinc-600 h-48 md:h-72'></div>
           <div className='border-2 border-dashed rounded-lg border-zinc-300 dark:border-zinc-600 h-48 md:h-72'></div>
-        </div>
+        </div> */}
       </main>
     </div>
   )
