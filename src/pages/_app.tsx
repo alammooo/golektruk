@@ -51,6 +51,9 @@ export default function MyApp({
     case router.pathname.startsWith("/register"):
       renderWithLayout = Component.getLayout ?? ((page: Page) => <>{page}</>)
       break
+    case router.pathname.startsWith("/login"):
+      renderWithLayout = Component.getLayout ?? ((page: Page) => <>{page}</>)
+      break
     default:
       renderWithLayout =
         Component.getLayout ?? ((page: Page) => <MainLayout>{page}</MainLayout>)

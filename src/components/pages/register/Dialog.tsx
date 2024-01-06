@@ -15,7 +15,7 @@ import { apiUrl } from "@/utils/apiUrl"
 import { useToast } from "@/components/ui/use-toast"
 import { useMutation } from "@tanstack/react-query"
 import { UploadFn } from "@/query/UploadFn"
-import { AuthFn } from "@/query/RegisterFn"
+import { AuthFn } from "@/query/AuthFn"
 import { RegisterInput } from "@/types/auth.types"
 
 type Props = {
@@ -54,12 +54,14 @@ export default function UploadDialog({
     onMutate: () => {},
     onSuccess: (data) => {
       toast({
-        description: "Success upload photo",
+        description: "Success register user",
       })
-      setPhotoCode(data)
     },
     onError: (error: any) => {
-      toast({ description: "Error upload photo" })
+      toast({ description: "Error register user" })
+    },
+    onSettled: () => {
+      setShowDialog(false)
     },
   })
 
@@ -113,7 +115,7 @@ export default function UploadDialog({
                           stroke='currentColor'
                           strokeLinecap='round'
                           strokeLinejoin='round'
-                          stroke-width='2'
+                          strokeWidth='2'
                           d='M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2'
                         />
                       </svg>
