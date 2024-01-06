@@ -10,11 +10,17 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { useMemo, useState } from "react"
+import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react"
+import axios from "axios"
+import { apiUrl } from "@/utils/apiUrl"
+import { DataType } from "."
 
-export function DateFilter({
-  className,
-}: React.HTMLAttributes<HTMLDivElement>) {
+type Props = {
+  setAnalyticData: Dispatch<SetStateAction<DataType[]>>
+  className?: React.HTMLAttributes<HTMLDivElement>
+}
+
+export function DateFilter({ className, setAnalyticData }: Props) {
   const [date, setDate] = useState<DateRange | undefined>({
     from: new Date(),
     to: new Date(),
@@ -25,9 +31,43 @@ export function DateFilter({
 
   const dateInterval = useMemo(() => {
     return eachDayOfInterval({ start: startDate, end: endDate }).map((date) =>
-      format(date, "dd-MM-yyyy")
+      format(date, "yyy-MM-dd")
     )
   }, [startDate, endDate])
+
+  async function fetchData(dateString: string) {
+    try {
+      const response = await axios.get(
+        `${apiUrl}/analytic/click?listing_date=${dateString}`,
+        {
+          headers: {
+            // Authorization: `Bearer ${localStorage.getItem("access_token")}`,
+            Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbiI6ImFmZDkzNGE2ZTQ5OTg1ZTEwM2Y2OGYyMTUzYmQ1MTEyM2RiNzJkZWZiY2Q1Zjg5Zjc2OTNjM2M5Yjc3YjkzMzc0MzI2MGJmYzM1YzI3MzA1ZmI4MDAxMGExZDhiMDkxMWVhMjE4ZDEyNmJhMzAxM2JmNGFhY2VhZDFkMWM4Mjk1In0.dHljRLagUIxoQWJcrevlG9isAPRRyOvOdPJZtDqyJWY`,
+          },
+        }
+      )
+
+      return response.data
+    } catch (error) {
+      throw error
+    }
+  }
+
+  const getWithPromiseAll = async (dateArray: string[]) => {
+    console.time("promise all")
+    let data = await Promise.all(
+      dateArray.map(async (d) => {
+        return await fetchData(d)
+      })
+    )
+
+    setAnalyticData(data)
+    console.timeEnd("promise all")
+  }
+
+  useEffect(() => {
+    getWithPromiseAll(dateInterval)
+  }, [date])
 
   return (
     <div className={cn("grid gap-2", className)}>
