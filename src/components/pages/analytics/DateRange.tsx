@@ -20,17 +20,21 @@ type Props = {
 export function DateFilter({ className, setDateStrInt, disabledState }: Props) {
   const [date, setDate] = useState<DateRange | undefined>()
 
-  const handleChangeDate = useCallback((val: DateRange | undefined) => {
-    setDate(val)
-    const startDate = val?.from
-    const endDate = val?.to || startDate
-    if (startDate && endDate) {
-      const dateArr = eachDayOfInterval({ start: startDate, end: endDate }).map(
-        (date) => format(date, "yyy-MM-dd")
-      )
-      setDateStrInt(dateArr)
-    }
-  }, [])
+  const handleChangeDate = useCallback(
+    (val: DateRange | undefined) => {
+      setDate(val)
+      const startDate = val?.from
+      const endDate = val?.to || startDate
+      if (startDate && endDate) {
+        const dateArr = eachDayOfInterval({
+          start: startDate,
+          end: endDate,
+        }).map((date) => format(date, "yyy-MM-dd"))
+        setDateStrInt(dateArr)
+      }
+    },
+    [setDateStrInt]
+  )
 
   return (
     <div className={cn("grid gap-2", className)}>
