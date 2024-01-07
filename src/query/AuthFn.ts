@@ -10,7 +10,11 @@ import axios from "axios"
 export class AuthFn {
   static async register(payload: RegisterInput): Promise<RegisterResponse> {
     try {
-      const response = await axios.post(`/user`, payload)
+      const response = await axios.post("/user", payload, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
 
       return response.data
     } catch (error) {
@@ -20,10 +24,15 @@ export class AuthFn {
 
   static async login(payload: RegisterInput): Promise<LoginResponse> {
     try {
-      const response = await axios.post(`/login`, payload)
+      const response = await axios.post("/login", payload, {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      })
       sessionStorage.setItem("access_token", response.data.access_token)
       return response.data
     } catch (error) {
+      console.log(error)
       throw error
     }
   }

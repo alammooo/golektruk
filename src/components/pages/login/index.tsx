@@ -2,6 +2,7 @@ import DangerAlert from "@/components/shared/DangerAlert"
 import { useToast } from "@/components/ui/use-toast"
 import { AuthFn } from "@/query/AuthFn"
 import { LoginError, LoginInput } from "@/types/auth.types"
+import { getErrorMessageByLoc } from "@/utils/errorValidator"
 import { useMutation } from "@tanstack/react-query"
 import { AxiosError } from "axios"
 import Link from "next/link"
@@ -29,8 +30,15 @@ export default function LoginPage() {
       })
       router.push("/")
     },
-    onError: (error: LoginError) => {
+    onError: (error: any) => {
       const { status } = error.response
+      const { detail } = error.response.data
+      setError("username", {
+        message: getErrorMessageByLoc(detail, "username"),
+      })
+      setError("password", {
+        message: getErrorMessageByLoc(detail, "password"),
+      })
       if (status === 401) {
         setError("root", { message: "Invalid username or password" })
       }
@@ -68,8 +76,11 @@ export default function LoginPage() {
                   type='text'
                   id='username'
                   className='bg-zinc-50 border border-zinc-300 text-zinc-900 sm:text-sm rounded-lg focus:ring-zinc-600 focus:border-zinc-600 block w-full p-2.5'
-                  {...register("username", { required: true })}
+                  {...register("username")}
                 />
+                <h5 className='text-xs text-red-500 mt-1 capitalize'>
+                  {errors.username?.message}
+                </h5>
               </div>
               <div>
                 <label
@@ -82,8 +93,11 @@ export default function LoginPage() {
                   id='password'
                   placeholder='••••••••'
                   className='bg-zinc-50 border border-zinc-300 text-zinc-900 sm:text-sm rounded-lg focus:ring-zinc-600 focus:border-zinc-600 block w-full p-2.5'
-                  {...register("password", { required: true })}
+                  {...register("password")}
                 />
+                <h5 className='text-xs text-red-500 mt-1 capitalize'>
+                  {errors.password?.message}
+                </h5>
               </div>
               <button
                 type='submit'

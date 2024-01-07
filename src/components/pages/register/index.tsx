@@ -56,7 +56,6 @@ export default function RegisterPage() {
     mutationFn: AuthFn.register,
     onMutate: () => {},
     onSuccess: (data) => {
-      // setShowDialog(false)
       toast({
         description: "Success register user",
       })
@@ -71,15 +70,6 @@ export default function RegisterPage() {
       setError("age", { message: getErrorMessageByLoc(detail, "age") })
       setError("name", { message: getErrorMessageByLoc(detail, "name") })
       setError("photos", { message: getErrorMessageByLoc(detail, "photos") })
-
-      // if (error.response.data.detail[0].type === "string_too_short") {
-      //   setError("password", {
-      //     message: "Password must have at least 3 character",
-      //   })
-      // }
-      // if (error.response.data.detail.code === "USER_EMAIL_EXISTS") {
-      //   setError("email", { message: "User already exists" })
-      // }
       toast({ description: "Error register user" })
     },
     onSettled: () => {
