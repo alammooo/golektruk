@@ -21,15 +21,15 @@ export default function AnalyticTable({ analyticData, dateStrInt }: Props) {
               className='px-4 py-3 whitespace-nowrap'>
               Total
             </th>
-            {dateStrInt?.length > 0 &&
-              dateStrInt?.map((e, i) => (
-                <th
-                  key={i}
-                  scope='col'
-                  className='px-4 py-3 whitespace-nowrap'>
-                  {e}
-                </th>
-              ))}
+
+            {dateStrInt?.map((e, i) => (
+              <th
+                key={i}
+                scope='col'
+                className='px-4 py-3 whitespace-nowrap'>
+                {e || "Value"}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
