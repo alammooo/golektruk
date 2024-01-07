@@ -9,7 +9,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react"
+import { Dispatch, SetStateAction, useCallback, useState } from "react"
 
 type Props = {
   setDateStrInt: Dispatch<SetStateAction<string[]>>
@@ -20,24 +20,17 @@ type Props = {
 export function DateFilter({ className, setDateStrInt, disabledState }: Props) {
   const [date, setDate] = useState<DateRange | undefined>()
 
-  const startDate = date?.from
-  const endDate = date?.to || startDate
-
-  const dateInterval = useMemo(() => {
+  const handleChangeDate = useCallback((val: DateRange | undefined) => {
+    setDate(val)
+    const startDate = val?.from
+    const endDate = val?.to || startDate
     if (startDate && endDate) {
       const dateArr = eachDayOfInterval({ start: startDate, end: endDate }).map(
         (date) => format(date, "yyy-MM-dd")
       )
-      return dateArr
+      setDateStrInt(dateArr)
     }
-    return [""]
-  }, [startDate, endDate])
-
-  useEffect(() => {
-    if (dateInterval) {
-      setDateStrInt(dateInterval)
-    }
-  }, [dateInterval])
+  }, [])
 
   return (
     <div className={cn("grid gap-2", className)}>
@@ -74,7 +67,7 @@ export function DateFilter({ className, setDateStrInt, disabledState }: Props) {
             mode='range'
             defaultMonth={date?.from}
             selected={date}
-            onSelect={setDate}
+            onSelect={handleChangeDate}
             numberOfMonths={2}
           />
         </PopoverContent>
