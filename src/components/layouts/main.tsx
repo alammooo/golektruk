@@ -4,6 +4,7 @@ import { Bars3Icon, BellIcon, XMarkIcon } from "@heroicons/react/24/outline"
 import { LayoutProps } from "@/types/layout.types"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { useRouter } from "next/router"
 
 const navigation = [
   { name: "Dashboard", href: "#", current: true },
@@ -12,11 +13,13 @@ const navigation = [
   { name: "Calendar", href: "#", current: false },
 ]
 
-function classNames(...classes: any[]) {
-  return classes.filter(Boolean).join(" ")
-}
-
 export default function MainLayout({ children }: LayoutProps) {
+  const router = useRouter()
+
+  function handleLogout() {
+    sessionStorage.clear()
+    router.replace("/login")
+  }
   return (
     <div className='antialiased bg-zinc-50 dark:bg-zinc-900'>
       <nav className='bg-white border-b border-zinc-200 px-4 py-2.5 dark:bg-zinc-800 dark:border-zinc-700 fixed left-0 right-0 top-0 z-50'>
@@ -57,7 +60,11 @@ export default function MainLayout({ children }: LayoutProps) {
               Laporan Analytics
             </Link>
           </div>
-          <Button variant='secondary'>Export Laporan</Button>
+          <Button
+            variant='secondary'
+            onClick={handleLogout}>
+            Logout
+          </Button>
         </div>
       </nav>
 

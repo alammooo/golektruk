@@ -23,6 +23,7 @@ type User = {
 
 type Props = {
   setUserType: Dispatch<SetStateAction<string | undefined>>
+  disabledState: boolean
 }
 
 type InsideProps = {
@@ -46,7 +47,7 @@ const usersType: User[] = [
   },
 ]
 
-export function UserDropdown({ setUserType }: Props) {
+export function UserDropdown({ setUserType, disabledState }: Props) {
   const [open, setOpen] = useState(false)
   const isDesktop = useMediaQuery("(min-width: 768px)")
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
@@ -56,7 +57,10 @@ export function UserDropdown({ setUserType }: Props) {
       <Popover
         open={open}
         onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
+        <PopoverTrigger
+          asChild
+          disabled={disabledState}
+          className={`${disabledState ? "cursor-not-allowed" : ""}`}>
           <Button
             variant='outline'
             className='w-[150px] justify-start'>
@@ -80,7 +84,10 @@ export function UserDropdown({ setUserType }: Props) {
     <Drawer
       open={open}
       onOpenChange={setOpen}>
-      <DrawerTrigger asChild>
+      <DrawerTrigger
+        asChild
+        disabled={disabledState}
+        className={`${disabledState ? "cursor-not-allowed" : ""}`}>
         <Button
           variant='outline'
           className='w-full justify-start'>

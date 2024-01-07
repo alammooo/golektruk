@@ -11,8 +11,13 @@ import dayjs from "dayjs"
 import { PlatformType, UserType } from "@/types/analytic.types"
 import { useDebounce, useReadLocalStorage } from "usehooks-ts"
 import * as XLSX from "xlsx"
+import { checkAuth } from "@/utils/auth"
+import { GetServerSideProps, NextPage } from "next"
+import useAccessToken from "@/hooks/useAccessToken"
+import { useRouter } from "next/router"
 
-export default function DatePage() {
+export default function AnalyticPage() {
+  useAccessToken()
   const [dateStrInt, setDateStrInt] = useState<string[]>([""])
   const [platformType, setPlatformType] = useState<string>()
   const [userType, setUserType] = useState<string>()
@@ -122,10 +127,20 @@ export default function DatePage() {
             <div className='flex items-center gap-3 flex-col md:flex-row'>
               <p className='font-bold'>Filter </p>
               <div className='flex items-center gap-2 md:gap-7 flex-col md:flex-row'>
-                <DateFilter setDateStrInt={setDateStrInt} />
-                <PlatformDropdown setPlatformType={setPlatformType} />
-                <UserDropdown setUserType={setUserType} />
+                <DateFilter
+                  setDateStrInt={setDateStrInt}
+                  disabledState={analyticQuery?.pending}
+                />
+                <PlatformDropdown
+                  setPlatformType={setPlatformType}
+                  disabledState={analyticQuery?.pending}
+                />
+                <UserDropdown
+                  setUserType={setUserType}
+                  disabledState={analyticQuery?.pending}
+                />
                 <Input
+                  disabled={analyticQuery?.pending}
                   type='text'
                   placeholder='Search by scope ...'
                   onChange={handleChange}
@@ -133,9 +148,10 @@ export default function DatePage() {
               </div>
             </div>
             <button
+              disabled={analyticQuery?.pending}
               onClick={handleExport}
               type='button'
-              className='w-full md:w-fit flex items-center justify-center text-white bg-zinc-700 hover:bg-zinc-800 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2'>
+              className='disabled:cursor-not-allowed w-full md:w-fit flex items-center justify-center text-white bg-zinc-700 hover:bg-zinc-800 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2'>
               <svg
                 className='h-3.5 w-3.5 mr-2'
                 fill='currentColor'

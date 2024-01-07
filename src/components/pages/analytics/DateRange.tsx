@@ -14,9 +14,10 @@ import { Dispatch, SetStateAction, useEffect, useMemo, useState } from "react"
 type Props = {
   setDateStrInt: Dispatch<SetStateAction<string[]>>
   className?: React.HTMLAttributes<HTMLDivElement>
+  disabledState: boolean
 }
 
-export function DateFilter({ className, setDateStrInt }: Props) {
+export function DateFilter({ className, setDateStrInt, disabledState }: Props) {
   const [date, setDate] = useState<DateRange | undefined>()
 
   const startDate = date?.from
@@ -44,9 +45,10 @@ export function DateFilter({ className, setDateStrInt }: Props) {
         <PopoverTrigger asChild>
           <Button
             id='date'
+            disabled={disabledState}
             variant={"outline"}
             className={cn(
-              "w-[300px] justify-start text-left font-normal",
+              "w-[300px] justify-start text-left font-normal disabled:cursor-not-allowed",
               !date && "text-muted-foreground"
             )}>
             <CalendarIcon className='mr-2 h-4 w-4' />

@@ -27,7 +27,7 @@ export default function AnalyticTable({ analyticData, dateStrInt }: Props) {
                   key={i}
                   scope='col'
                   className='px-4 py-3 whitespace-nowrap'>
-                  {e}
+                  {e || "value"}
                 </th>
               ))}
           </tr>

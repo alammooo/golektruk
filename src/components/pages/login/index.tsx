@@ -34,7 +34,6 @@ export default function LoginPage() {
       if (status === 401) {
         setError("root", { message: "Invalid username or password" })
       }
-      toast({ description: "Error login" })
     },
   })
 
