@@ -14,11 +14,21 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { useMediaQuery } from "@/hooks/useMediaQuery"
-import { useState } from "react"
+import { Dispatch, SetStateAction, useState } from "react"
 
 type User = {
-  value: string
+  value: string | undefined
   label: string
+}
+
+type Props = {
+  setUserType: Dispatch<SetStateAction<string | undefined>>
+}
+
+type InsideProps = {
+  setOpen: (open: boolean) => void
+  setSelectedUser: (platform: User | null) => void
+  setUserType: Dispatch<SetStateAction<string | undefined>>
 }
 
 const usersType: User[] = [
@@ -30,9 +40,13 @@ const usersType: User[] = [
     value: "guest",
     label: "Guest",
   },
+  {
+    value: undefined,
+    label: "All",
+  },
 ]
 
-export function UserDropdown() {
+export function UserDropdown({ setUserType }: Props) {
   const [open, setOpen] = useState(false)
   const isDesktop = useMediaQuery("(min-width: 768px)")
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
@@ -55,6 +69,7 @@ export function UserDropdown() {
           <UserList
             setOpen={setOpen}
             setSelectedUser={setSelectedUser}
+            setUserType={setUserType}
           />
         </PopoverContent>
       </Popover>
@@ -77,6 +92,7 @@ export function UserDropdown() {
           <UserList
             setOpen={setOpen}
             setSelectedUser={setSelectedUser}
+            setUserType={setUserType}
           />
         </div>
       </DrawerContent>
@@ -84,13 +100,7 @@ export function UserDropdown() {
   )
 }
 
-function UserList({
-  setOpen,
-  setSelectedUser,
-}: {
-  setOpen: (open: boolean) => void
-  setSelectedUser: (user: User | null) => void
-}) {
+function UserList({ setOpen, setSelectedUser, setUserType }: InsideProps) {
   return (
     <Command>
       <CommandInput placeholder='Filter user...' />
@@ -105,6 +115,7 @@ function UserList({
                 setSelectedUser(
                   usersType.find((ele) => ele.value === value) || null
                 )
+                setUserType(user.value)
                 setOpen(false)
               }}>
               {user.label}

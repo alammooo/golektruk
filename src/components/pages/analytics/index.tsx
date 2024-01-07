@@ -1,5 +1,5 @@
 import { DateFilter } from "@/components/pages/analytics/DateRange"
-import { useEffect, useState } from "react"
+import { ChangeEvent, useEffect, useState } from "react"
 import AnalyticTable from "./Table"
 import { PlatformDropdown } from "./filters/PlatformDropdown"
 import { UserDropdown } from "./filters/UserDropdown"
@@ -8,17 +8,32 @@ import { useQueries } from "@tanstack/react-query"
 import { AnalyticFn } from "@/query/AnalyticFn"
 import { combineArraysByScope } from "@/utils/dataMapper"
 import dayjs from "dayjs"
-
-const today = dayjs().format("YYYY-MM-DD")
+import { PlatformType, UserType } from "@/types/analytic.types"
+import { useDebounce, useReadLocalStorage } from "usehooks-ts"
+import * as XLSX from "xlsx"
 
 export default function DatePage() {
-  const [dateStrInt, setDateStrInt] = useState<string[]>([today])
+  const [dateStrInt, setDateStrInt] = useState<string[]>([""])
+  const [platformType, setPlatformType] = useState<string>()
+  const [userType, setUserType] = useState<string>()
+  const [scope, setScope] = useState<string>("")
+  const debouncedValue = useDebounce<string>(scope, 500)
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setScope(event.target.value)
+  }
 
   const analyticQuery = useQueries({
     queries: dateStrInt.map((date) => {
       return {
-        queryKey: ["user", date],
-        queryFn: () => AnalyticFn.fetchData(date),
+        queryKey: ["user", date, platformType, userType, debouncedValue],
+        queryFn: () =>
+          AnalyticFn.fetchData({
+            listingDate: date,
+            platformType,
+            userType,
+            scope: debouncedValue,
+          }),
       }
     }),
     combine: (results) => {
@@ -28,6 +43,9 @@ export default function DatePage() {
       }
     },
   })
+
+  console.log(analyticQuery?.data, "HALLO DATA#")
+  console.log(dateStrInt, "HALLO DATA#")
 
   // useEffect(() => {
   //   if (analyticQuery.pending === false) {
@@ -56,6 +74,23 @@ export default function DatePage() {
   // useEffect(() => {
   //   getWithPromiseAll(dateInterval)
   // }, [date])
+
+  const handleExport = () => {
+    const wb = XLSX.utils.book_new()
+
+    const dataToExport = [
+      ["Scope", "Total", ...dateStrInt],
+      ...analyticQuery?.data,
+    ]
+
+    // Create a worksheet and add the dateStrInt
+    const ws = XLSX.utils.aoa_to_sheet(dataToExport)
+    XLSX.utils.book_append_sheet(wb, ws, "Sheet1")
+
+    // Save the file
+    const fileName = `${dayjs().format("DDMMYYYYHHmmss")}-exported_data.xlsx`
+    XLSX.writeFile(wb, fileName)
+  }
 
   return (
     <section className='bg-gray-50 dark:bg-gray-900 p-3 sm:p-5'>
@@ -91,15 +126,17 @@ export default function DatePage() {
               <p className='font-bold'>Filter </p>
               <div className='flex items-center gap-2 md:gap-7 flex-col md:flex-row'>
                 <DateFilter setDateStrInt={setDateStrInt} />
-                <PlatformDropdown />
-                <UserDropdown />
+                <PlatformDropdown setPlatformType={setPlatformType} />
+                <UserDropdown setUserType={setUserType} />
                 <Input
                   type='text'
                   placeholder='Search by scope ...'
+                  onChange={handleChange}
                 />
               </div>
             </div>
             <button
+              onClick={handleExport}
               type='button'
               className='w-full md:w-fit flex items-center justify-center text-white bg-zinc-700 hover:bg-zinc-800 focus:ring-4 focus:ring-zinc-300 font-medium rounded-lg text-sm px-4 py-2'>
               <svg
@@ -126,3 +163,16 @@ export default function DatePage() {
     </section>
   )
 }
+
+// ['a', 10073, 1007, 582, 597, 1157, 1014, 1023, 1092, 639, 959, 1121, 882]
+// ['b', 11568, 940, 897, 1233, 800, 1263, 1560, 1388, 540, 939, 692, 1316]
+// ['c', 11139, 1467, 976, 756, 887, 1705, 1281, 896, 1060, 412, 1028, 671]
+// ['d', 8536, 362, 472, 1194, 1279, 555, 633, 1505, 984, 366, 602, 584]
+// ['e', 10843, 789, 1016, 538, 1504, 1435, 1396, 518, 956, 1238, 508, 945]
+// ['f', 10186, 619, 1281, 311, 1350, 955, 1400, 884, 1216, 1039, 822, 309]
+// ['g', 9630, 1672, 745, 521, 1504, 377, 1482, 648, 132, 922, 362, 1265]
+// ['h', 11453, 994, 913, 822, 702, 1391, 1040, 1005, 392, 1145, 1523, 1526]
+// ['i', 9781, 1868, 1010, 874, 774, 1376, 311, 961, 173, 881, 755, 798]
+// ['j', 12283, 1014, 775, 1071, 917, 887, 1355, 634, 1201, 1035, 1434, 1960]
+
+// ['2024-01-08', '2024-01-09', '2024-01-10', '2024-01-11', '2024-01-12', '2024-01-13', '2024-01-14', '2024-01-15', '2024-01-16', '2024-01-17', '2024-01-18']

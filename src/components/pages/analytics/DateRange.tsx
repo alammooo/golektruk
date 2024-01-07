@@ -17,19 +17,19 @@ type Props = {
 }
 
 export function DateFilter({ className, setDateStrInt }: Props) {
-  const [date, setDate] = useState<DateRange | undefined>({
-    from: new Date(),
-    to: new Date(),
-  })
+  const [date, setDate] = useState<DateRange | undefined>()
 
-  const startDate = date?.from || new Date()
+  const startDate = date?.from
   const endDate = date?.to || startDate
 
   const dateInterval = useMemo(() => {
-    const dateArr = eachDayOfInterval({ start: startDate, end: endDate }).map(
-      (date) => format(date, "yyy-MM-dd")
-    )
-    return dateArr
+    if (startDate && endDate) {
+      const dateArr = eachDayOfInterval({ start: startDate, end: endDate }).map(
+        (date) => format(date, "yyy-MM-dd")
+      )
+      return dateArr
+    }
+    return [""]
   }, [startDate, endDate])
 
   useEffect(() => {

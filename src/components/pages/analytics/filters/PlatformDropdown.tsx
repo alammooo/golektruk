@@ -14,10 +14,20 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import { useMediaQuery } from "@/hooks/useMediaQuery"
-import { useState } from "react"
+import { Dispatch, SetStateAction, useState } from "react"
+
+type Props = {
+  setPlatformType: Dispatch<SetStateAction<string | undefined>>
+}
+
+type InsideProps = {
+  setOpen: (open: boolean) => void
+  setSelectedPlatform: (platform: Platform | null) => void
+  setPlatformType: Dispatch<SetStateAction<string | undefined>>
+}
 
 type Platform = {
-  value: string
+  value: string | undefined
   label: string
 }
 
@@ -34,9 +44,13 @@ const platforms: Platform[] = [
     value: "mobile",
     label: "Mobile",
   },
+  {
+    value: undefined,
+    label: "All",
+  },
 ]
 
-export function PlatformDropdown() {
+export function PlatformDropdown({ setPlatformType }: Props) {
   const [open, setOpen] = useState(false)
   const isDesktop = useMediaQuery("(min-width: 768px)")
   const [selectedPlatform, setSelectedPlatform] = useState<Platform | null>(
@@ -65,6 +79,7 @@ export function PlatformDropdown() {
           <PlatformList
             setOpen={setOpen}
             setSelectedPlatform={setSelectedPlatform}
+            setPlatformType={setPlatformType}
           />
         </PopoverContent>
       </Popover>
@@ -91,6 +106,7 @@ export function PlatformDropdown() {
           <PlatformList
             setOpen={setOpen}
             setSelectedPlatform={setSelectedPlatform}
+            setPlatformType={setPlatformType}
           />
         </div>
       </DrawerContent>
@@ -101,10 +117,8 @@ export function PlatformDropdown() {
 function PlatformList({
   setOpen,
   setSelectedPlatform,
-}: {
-  setOpen: (open: boolean) => void
-  setSelectedPlatform: (platform: Platform | null) => void
-}) {
+  setPlatformType,
+}: InsideProps) {
   return (
     <Command>
       <CommandInput placeholder='Filter platform...' />
@@ -119,6 +133,8 @@ function PlatformList({
                 setSelectedPlatform(
                   platforms.find((ele) => ele.value === value) || null
                 )
+                // console.log(value, "HALLO VALUEEEE✅✅✅✅✅")
+                setPlatformType(platform.value)
                 setOpen(false)
               }}>
               {platform.label}
