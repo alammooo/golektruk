@@ -42,13 +42,13 @@ export default function LoginPage() {
   }
   return (
     <section className='bg-zinc-50'>
-      <div className='flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0'>
+      <div className='flex flex-col items-center justify-center px-6 py-8 mx-auto h-screen lg:py-0'>
         <span className='flex items-center mb-3 text-7xl text-zinc-950'>
           <IoAnalyticsSharp />
         </span>
         {errors?.root?.message && <DangerAlert text={errors?.root?.message} />}
 
-        <div className='w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0'>
+        <div className='w-full bg-white rounded-lg shadow-lg md:mt-0 sm:max-w-md xl:p-0'>
           <div className='p-6 space-y-4 md:space-y-6 sm:p-8'>
             <div className='flex flex-col gap-1'>
               <h1 className='text-xl font-bold leading-tight tracking-tight text-zinc-900 md:text-2xl'>
@@ -87,7 +87,7 @@ export default function LoginPage() {
               </div>
               <button
                 type='submit'
-                className='w-full text-white bg-zinc-600 hover:bg-zinc-700 focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center'>
+                className='w-full text-white bg-zinc-950 hover:bg-zinc-700 focus:ring-4 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center'>
                 Sign in
               </button>
               <p className='text-sm font-light text-zinc-500'>

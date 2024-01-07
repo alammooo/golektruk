@@ -2,13 +2,18 @@ import Link from "next/link"
 import { IoAnalyticsSharp } from "react-icons/io5"
 import { useForm } from "react-hook-form"
 import { useState } from "react"
-import { checkObjectKeys } from "@/utils/checkObject"
 import UploadDialog from "./Dialog"
-import { RegisterInput } from "@/types/auth.types"
+import { RegisterError, RegisterInput } from "@/types/auth.types"
+import { useMutation } from "@tanstack/react-query"
+import { UploadFn } from "@/query/UploadFn"
+import { useToast } from "@/components/ui/use-toast"
+import { AuthFn } from "@/query/AuthFn"
+import { getErrorMessageByLoc } from "@/utils/errorValidator"
 
 type dataForm = Omit<RegisterInput, "photo">
 
 export default function RegisterPage() {
+  const { toast } = useToast()
   const [showDialog, setShowDialog] = useState(false)
   const [data, setData] = useState<RegisterInput>()
   const {
@@ -16,25 +21,74 @@ export default function RegisterPage() {
     handleSubmit,
     watch,
     getValues,
+    setError,
     formState: { errors, isValid },
   } = useForm<RegisterInput>()
 
   function onSubmit(data: RegisterInput) {
-    if (isValid) {
-      setShowDialog(true)
-      setData(getValues())
-    }
+    setShowDialog(true)
+    setData(getValues())
+  }
+
+  const [photoCode, setPhotoCode] = useState("")
+
+  const { mutate: uploadPhoto, status: uploadStatus } = useMutation({
+    mutationFn: UploadFn.post,
+    onMutate: () => {},
+    onSuccess: (data) => {
+      toast({
+        description: "Success upload photo",
+      })
+      setPhotoCode(data)
+    },
+    onError: (error: any) => {
+      toast({ description: "Error upload photo" })
+    },
+  })
+
+  const { mutate: registerUser, status: registerStatus } = useMutation({
+    mutationFn: AuthFn.register,
+    onMutate: () => {},
+    onSuccess: (data) => {
+      setShowDialog(false)
+      toast({
+        description: "Success register user",
+      })
+    },
+    onError: (error: RegisterError) => {
+      setShowDialog(false)
+      const { detail } = error.response.data
+      setError("email", { message: getErrorMessageByLoc(detail, "email") })
+      setError("phone", { message: getErrorMessageByLoc(detail, "phone") })
+      setError("password", {
+        message: getErrorMessageByLoc(detail, "password"),
+      })
+      setError("age", { message: getErrorMessageByLoc(detail, "age") })
+      setError("name", { message: getErrorMessageByLoc(detail, "name") })
+
+      // if (error.response.data.detail[0].type === "string_too_short") {
+      //   setError("password", {
+      //     message: "Password must have at least 3 character",
+      //   })
+      // }
+      // if (error.response.data.detail.code === "USER_EMAIL_EXISTS") {
+      //   setError("email", { message: "User already exists" })
+      // }
+      toast({ description: "Error register user" })
+    },
+  })
+
+  function handleClick() {
+    registerUser({ ...data, photos: [photoCode] })
   }
 
   return (
     <section className='bg-zinc-50'>
-      <div className='flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0'>
-        <Link
-          href='/'
-          className='flex items-center mb-3 text-7xl text-zinc-950'>
+      <div className='flex flex-col items-center justify-center px-6 py-8 mx-auto h-screen lg:py-0'>
+        <span className='flex items-center mb-3 text-7xl text-zinc-950'>
           <IoAnalyticsSharp />
-        </Link>
-        <div className='w-full bg-white rounded-lg shadow md:mt-0 sm:max-w-md xl:p-0'>
+        </span>
+        <div className='w-full bg-white rounded-lg shadow-lg md:mt-0 sm:max-w-md xl:p-0'>
           <div className='p-6 space-y-4 md:space-y-6 sm:p-8'>
             <h1 className='text-xl font-bold leading-tight tracking-tight text-zinc-900 md:text-2xl'>
               Create an account
@@ -49,7 +103,7 @@ export default function RegisterPage() {
                   Your email
                 </label>
                 <input
-                  type='email'
+                  type='type'
                   id='email'
                   className='bg-zinc-50 border border-zinc-300 text-zinc-900 sm:text-sm rounded-lg focus:ring-zinc-600 focus:border-zinc-600 block w-full p-2.5'
                   placeholder='name@company.com'
@@ -164,6 +218,9 @@ export default function RegisterPage() {
         showDialog={showDialog}
         setShowDialog={setShowDialog}
         data={data}
+        uploadPhoto={uploadPhoto}
+        handleClick={handleClick}
+        errorMsg={errors.photos?.message}
       />
     </section>
   )

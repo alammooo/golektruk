@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button"
 import axios from "axios"
 import { apiUrl } from "@/utils/apiUrl"
 import { useToast } from "@/components/ui/use-toast"
-import { useMutation } from "@tanstack/react-query"
+import { UseMutateFunction, useMutation } from "@tanstack/react-query"
 import { UploadFn } from "@/query/UploadFn"
 import { AuthFn } from "@/query/AuthFn"
 import { RegisterInput } from "@/types/auth.types"
@@ -23,52 +23,21 @@ type Props = {
   data: RegisterInput | undefined
   showDialog: boolean
   setShowDialog: Dispatch<SetStateAction<boolean>>
+  uploadPhoto: UseMutateFunction<any, any, FormData, void>
+  handleClick: () => void
+  errorMsg: string | undefined
 }
 
 export default function UploadDialog({
-  data,
   showDialog,
   setShowDialog,
+  uploadPhoto,
+  handleClick,
+  errorMsg,
 }: Props) {
-  const { toast } = useToast()
   const [filePreview, setFilePreview] = useState<string | ArrayBuffer | null>(
     null
   )
-  const [photoCode, setPhotoCode] = useState("")
-
-  const { mutate: uploadPhoto, status: uploadStatus } = useMutation({
-    mutationFn: UploadFn.post,
-    onMutate: () => {},
-    onSuccess: (data) => {
-      toast({
-        description: "Success upload photo",
-      })
-      setPhotoCode(data)
-    },
-    onError: (error: any) => {
-      toast({ description: "Error upload photo" })
-    },
-  })
-
-  const { mutate: registerUser, status: registerStatus } = useMutation({
-    mutationFn: AuthFn.register,
-    onMutate: () => {},
-    onSuccess: (data) => {
-      toast({
-        description: "Success register user",
-      })
-    },
-    onError: (error: any) => {
-      toast({ description: "Error register user" })
-    },
-    onSettled: () => {
-      setShowDialog(false)
-    },
-  })
-
-  function handleClick() {
-    registerUser({ ...data, photos: [photoCode] })
-  }
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
@@ -140,6 +109,7 @@ export default function UploadDialog({
               </label>
             </div>
           </div>
+          {errorMsg}
         </form>
         <Button
           onClick={handleClick}
