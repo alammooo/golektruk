@@ -13,6 +13,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { useRouter } from "next/router"
 import MainLayout from "@/components/layouts/main"
+import axios from "axios"
 
 // If loading a variable font, you don't need to specify the font weight
 const inter = Inter({ subsets: ["latin"] })
@@ -59,6 +60,8 @@ export default function MyApp({
         Component.getLayout ?? ((page: Page) => <MainLayout>{page}</MainLayout>)
       break
   }
+
+  axios.defaults.baseURL = "https://recruitment-test.gltkdev.com"
 
   return (
     <QueryClientProvider client={queryClient}>

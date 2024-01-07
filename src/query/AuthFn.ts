@@ -10,26 +10,17 @@ import axios from "axios"
 export class AuthFn {
   static async register(payload: RegisterInput): Promise<RegisterResponse> {
     try {
-      const response = await axios.post(`${apiUrl}/user`, payload, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
+      const response = await axios.post(`/user`, payload)
 
       return response.data
     } catch (error) {
-      // console.log(error, "🔴🔴🔴🔴🔴🔴🔴 FROM REGISTER")
       throw error
     }
   }
 
   static async login(payload: RegisterInput): Promise<LoginResponse> {
     try {
-      const response = await axios.post(`${apiUrl}/login`, payload, {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      })
+      const response = await axios.post(`/login`, payload)
       sessionStorage.setItem("access_token", response.data.access_token)
       return response.data
     } catch (error) {
