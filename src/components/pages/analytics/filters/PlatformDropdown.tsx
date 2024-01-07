@@ -133,7 +133,6 @@ function PlatformList({
                 setSelectedPlatform(
                   platforms.find((ele) => ele.value === value) || null
                 )
-                // console.log(value, "HALLO VALUEEEE✅✅✅✅✅")
                 setPlatformType(platform.value)
                 setOpen(false)
               }}>

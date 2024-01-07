@@ -10,9 +10,6 @@ export function combineArraysByScope(
   const arrScopeValue: ObjectEntry[] = arrays
     .filter(Boolean)
     .flatMap((arr) => arr || [])
-
-  // console.log(arrScopeValue, "HALLO ARR SCOPE")
-
   const countsByScope: CountsByScope = {}
 
   arrScopeValue.forEach(({ scope, count }) => {

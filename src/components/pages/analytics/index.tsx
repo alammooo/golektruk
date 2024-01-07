@@ -44,9 +44,6 @@ export default function DatePage() {
     },
   })
 
-  console.log(analyticQuery?.data, "HALLO DATA#")
-  console.log(dateStrInt, "HALLO DATA#")
-
   // useEffect(() => {
   //   if (analyticQuery.pending === false) {
   //     setAnalyticData(combineArraysByScope(analyticQuery?.data))
