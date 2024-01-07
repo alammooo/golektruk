@@ -18,7 +18,7 @@ export class AuthFn {
 
       return response.data
     } catch (error) {
-      console.log(error, "🔴🔴🔴🔴🔴🔴🔴")
+      // console.log(error, "🔴🔴🔴🔴🔴🔴🔴 FROM REGISTER")
       throw error
     }
   }
@@ -30,7 +30,7 @@ export class AuthFn {
           "Content-Type": "application/x-www-form-urlencoded",
         },
       })
-      localStorage.setItem("access_token", response.data.access_token)
+      sessionStorage.setItem("access_token", response.data.access_token)
       return response.data
     } catch (error) {
       throw error

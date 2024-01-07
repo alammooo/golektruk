@@ -18,6 +18,7 @@ import { Dispatch, SetStateAction, useState } from "react"
 
 type Props = {
   setPlatformType: Dispatch<SetStateAction<string | undefined>>
+  disabledState: boolean
 }
 
 type InsideProps = {
@@ -50,7 +51,7 @@ const platforms: Platform[] = [
   },
 ]
 
-export function PlatformDropdown({ setPlatformType }: Props) {
+export function PlatformDropdown({ setPlatformType, disabledState }: Props) {
   const [open, setOpen] = useState(false)
   const isDesktop = useMediaQuery("(min-width: 768px)")
   const [selectedPlatform, setSelectedPlatform] = useState<Platform | null>(
@@ -62,7 +63,10 @@ export function PlatformDropdown({ setPlatformType }: Props) {
       <Popover
         open={open}
         onOpenChange={setOpen}>
-        <PopoverTrigger asChild>
+        <PopoverTrigger
+          asChild
+          disabled={disabledState}
+          className={`${disabledState ? "cursor-not-allowed" : ""}`}>
           <Button
             variant='outline'
             className='w-[150px] justify-start'>
@@ -90,7 +94,10 @@ export function PlatformDropdown({ setPlatformType }: Props) {
     <Drawer
       open={open}
       onOpenChange={setOpen}>
-      <DrawerTrigger asChild>
+      <DrawerTrigger
+        asChild
+        disabled={disabledState}
+        className={`${disabledState ? "cursor-not-allowed" : ""}`}>
         <Button
           variant='outline'
           className='w-full justify-start'>

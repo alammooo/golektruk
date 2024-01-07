@@ -15,6 +15,7 @@ export class UploadFn {
       )
       return response.data
     } catch (error) {
+      console.log(error, "ERROR FROM UPLOAD")
       throw error
     }
   }

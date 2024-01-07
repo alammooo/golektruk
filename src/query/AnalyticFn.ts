@@ -4,7 +4,7 @@ import axios from "axios"
 
 export class AnalyticFn {
   static async fetchData(payload: FetchInput): Promise<ObjectEntry[]> {
-    const access_token = localStorage.getItem("access_token")
+    const access_token = sessionStorage.getItem("access_token")
     try {
       const response = await axios.get(
         "https://recruitment-test.gltkdev.com/analytic/click",

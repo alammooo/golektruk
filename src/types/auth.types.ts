@@ -37,3 +37,13 @@ export type LoginError = {
     statusText: string
   }
 }
+
+export type RegisterError = {
+  response: {
+    data: {
+      detail: any
+    }
+    status: number
+    statusText: string
+  }
+}
