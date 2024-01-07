@@ -25,7 +25,7 @@ type Props = {
   setShowDialog: Dispatch<SetStateAction<boolean>>
   uploadPhoto: UseMutateFunction<any, any, FormData, void>
   handleClick: () => void
-  errorMsg: string | undefined
+  errorMsg?: string | undefined
 }
 
 export default function UploadDialog({
@@ -109,7 +109,9 @@ export default function UploadDialog({
               </label>
             </div>
           </div>
-          {errorMsg}
+          <span className='text-sm text-red-500 mt-0.5 capitalize'>
+            {errorMsg}
+          </span>
         </form>
         <Button
           onClick={handleClick}

@@ -25,7 +25,9 @@ export default function RegisterPage() {
     formState: { errors, isValid },
   } = useForm<RegisterInput>()
 
-  function onSubmit(data: RegisterInput) {
+  function handleOpenDialog() {
+    console.log("MASUK")
+
     setShowDialog(true)
     setData(getValues())
   }
@@ -42,6 +44,10 @@ export default function RegisterPage() {
       setPhotoCode(data)
     },
     onError: (error: any) => {
+      const { detail } = error.response.data
+      if (detail.code === "IMAGE_TOO_BIG") {
+        setError("photos", { message: "Image size is too big" })
+      }
       toast({ description: "Error upload photo" })
     },
   })
@@ -50,13 +56,12 @@ export default function RegisterPage() {
     mutationFn: AuthFn.register,
     onMutate: () => {},
     onSuccess: (data) => {
-      setShowDialog(false)
+      // setShowDialog(false)
       toast({
         description: "Success register user",
       })
     },
     onError: (error: RegisterError) => {
-      setShowDialog(false)
       const { detail } = error.response.data
       setError("email", { message: getErrorMessageByLoc(detail, "email") })
       setError("phone", { message: getErrorMessageByLoc(detail, "phone") })
@@ -65,6 +70,7 @@ export default function RegisterPage() {
       })
       setError("age", { message: getErrorMessageByLoc(detail, "age") })
       setError("name", { message: getErrorMessageByLoc(detail, "name") })
+      setError("photos", { message: getErrorMessageByLoc(detail, "photos") })
 
       // if (error.response.data.detail[0].type === "string_too_short") {
       //   setError("password", {
@@ -76,10 +82,17 @@ export default function RegisterPage() {
       // }
       toast({ description: "Error register user" })
     },
+    onSettled: () => {
+      setShowDialog(false)
+    },
   })
 
   function handleClick() {
     registerUser({ ...data, photos: [photoCode] })
+  }
+
+  function onSubmit(input: any) {
+    console.log(input)
   }
 
   return (
@@ -107,9 +120,7 @@ export default function RegisterPage() {
                   id='email'
                   className='bg-zinc-50 border border-zinc-300 text-zinc-900 sm:text-sm rounded-lg focus:ring-zinc-600 focus:border-zinc-600 block w-full p-2.5'
                   placeholder='name@company.com'
-                  {...register("email", {
-                    required: "please enter email",
-                  })}
+                  {...register("email")}
                 />
                 <h5 className='text-xs text-red-500 mt-1 capitalize'>
                   {errors.email?.message}
@@ -126,9 +137,7 @@ export default function RegisterPage() {
                   id='password'
                   placeholder='••••••••'
                   className='bg-zinc-50 border border-zinc-300 text-zinc-900 sm:text-sm rounded-lg focus:ring-zinc-600 focus:border-zinc-600 block w-full p-2.5'
-                  {...register("password", {
-                    required: "please enter password",
-                  })}
+                  {...register("password")}
                 />
                 <h5 className='text-xs text-red-500 mt-1 capitalize'>
                   {errors.password?.message}
@@ -144,9 +153,7 @@ export default function RegisterPage() {
                   type='text'
                   id='name'
                   className='bg-zinc-50 border border-zinc-300 text-zinc-900 sm:text-sm rounded-lg focus:ring-zinc-600 focus:border-zinc-600 block w-full p-2.5'
-                  {...register("name", {
-                    required: "please enter name",
-                  })}
+                  {...register("name")}
                 />
                 <h5 className='text-xs text-red-500 mt-1 capitalize'>
                   {errors.name?.message}
@@ -162,17 +169,7 @@ export default function RegisterPage() {
                   type='text'
                   id='phone'
                   className='bg-zinc-50 border border-zinc-300 text-zinc-900 sm:text-sm rounded-lg focus:ring-zinc-600 focus:border-zinc-600 block w-full p-2.5'
-                  {...register("phone", {
-                    required: "please enter phone number",
-                    minLength: {
-                      value: 10,
-                      message: "Must higher than 10 number",
-                    },
-                    maxLength: {
-                      value: 12,
-                      message: "Must lower than 12 number",
-                    },
-                  })}
+                  {...register("phone")}
                 />
                 <h5 className='text-xs text-red-500 mt-1 capitalize'>
                   {errors.phone?.message}
@@ -188,9 +185,7 @@ export default function RegisterPage() {
                   type='number'
                   id='age'
                   className='bg-zinc-50 border border-zinc-300 text-zinc-900 sm:text-sm rounded-lg focus:ring-zinc-600 focus:border-zinc-600 block w-full p-2.5'
-                  {...register("age", {
-                    required: "please enter age",
-                  })}
+                  {...register("age")}
                 />
                 <h5 className='text-xs text-red-500 mt-1 capitalize'>
                   {errors.age?.message}
@@ -198,7 +193,7 @@ export default function RegisterPage() {
               </div>
 
               <button
-                type='submit'
+                onClick={handleOpenDialog}
                 className='w-full text-white bg-zinc-950 hover:bg-zinc-700 focus:ring-2 focus:outline-none focus:ring-zinc-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center'>
                 Submit
               </button>
